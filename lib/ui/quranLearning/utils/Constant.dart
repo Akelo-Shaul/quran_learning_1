@@ -36,6 +36,8 @@ class Constant {
         MaterialPageRoute(builder: (context) => MainActivity(from, 0)),
             (Route<dynamic> route) => false);
   }
+
+
   static Widget ImageWidget(String path, double imgheight, double imgwidth) {
     String extensiondata = path.trim().isEmpty ? '' : path.split(".").last;
 

@@ -18,6 +18,8 @@ class StringsRes {
   static String goodevening = 'Good Evening';
   static String goodnight = 'Good Night';
 
+  static String quran = 'Quran';
+
   static String filtertoday = 'Today\'s';
   static String filtermonth = 'Month';
   static String filterweek = 'Week';

@@ -1,5 +1,7 @@
 // ignore_for_file: no_logic_in_create_state, non_constant_identifier_names
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quran_learning_1/ui/quranLearning/model/Amount.dart';
@@ -9,6 +11,7 @@ import 'package:quran_learning_1/ui/quranLearning/utils/ColorsRes.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/Constant.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/DecoratedTabBar.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/StringsRes.dart';
+import 'package:quran_learning_1/ui/quranLearning/utils/quran_service.dart';
 
 
 final _scaffoldKeyoutgoing = GlobalKey<ScaffoldState>();
@@ -29,6 +32,8 @@ class HistoryState extends State<HistoryActivity>
   String? selectedClass;
   DateTime selectedDate = DateTime.now();
   String? selectedTime;
+
+  String? selectedBook;
 
   String? selectedStudent, selectedChapter;
   final List<String> classes = ['Class 1', 'Class 2', 'Class 3'];
@@ -206,6 +211,16 @@ class HistoryState extends State<HistoryActivity>
 
   //todo: end of code block
 
+  final QuranService _quranService = QuranService();
+
+  final List<String> books = ['Quran', 'Teacher of Arabic Reading', 'Al-Qaidah An-Noraniah'];
+
+  List<dynamic> _chapters = [];
+  List<dynamic> _verses = [];
+
+  int? _selectedChapter;
+  int? _selectedVerse;
+
   TabController? tabController;
   int tabindex;
   //HistoryState(this.tabindex);
@@ -269,9 +284,58 @@ class HistoryState extends State<HistoryActivity>
     });
   }
 
+  Future<void> _fetchChapters() async {
+    try {
+      if(selectedBook == 'Quran'){
+        final chapters = await _quranService.getChapters();
+        setState(() {
+          _chapters = chapters;
+        });
+      }
+    } catch (e) {
+      print('Error fetching chapters: $e');
+    }
+  }
+
+  Future<void> _fetchVerses(int chapterNumber) async {
+    try {
+      final verses = await _quranService.getVerses(chapterNumber);
+      setState(() {
+        _verses = verses;
+      });
+    } catch (e) {
+      print('Error fetching verses: $e');
+    }
+  }
+
+
+  // void _fetchChapters() async {
+  //   try {
+  //     final chapters = await _quranService.getChapters();
+  //     if (chapters.isNotEmpty) {
+  //       print(chapters);
+  //       // setState(() {
+  //       //   _chapters = chapters;
+  //       // });
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching chapters: $e');
+  //   }
+  // }
+
+  // void _fetchVerses(int chapterNumber) async {
+  //   final verses = await _quranService.getVerses(chapterNumber);
+  //   setState(() {
+  //     _verses = verses;
+  //   });
+  // }
+
   @override
   void initState() {
     super.initState();
+
+    _fetchChapters();
+    _fetchVerses(-1);
 
     resultlist = [];
     paidamountlist = [];
@@ -1005,6 +1069,9 @@ class HistoryState extends State<HistoryActivity>
                 _showStudentList(context);
               }
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorsRes.appcolor
+            ),
             child: Text('Submit'),
           ),
         ],
@@ -1012,9 +1079,9 @@ class HistoryState extends State<HistoryActivity>
     );
   }
 
-  Widget RecordResults(){
+  Widget RecordResults() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(14.0),
       child: Column(
         children: [
           DropdownButtonFormField<String>(
@@ -1022,8 +1089,8 @@ class HistoryState extends State<HistoryActivity>
             hint: Text('Select Student'),
             items: students.map((student) {
               return DropdownMenuItem<String>(
-                value: student['name'], // or any unique identifier you have
-                child: Text(student['name']), // or any property to display
+                value: student['name'],
+                child: Text(student['name']),
               );
             }).toList(),
             onChanged: (newValue) {
@@ -1036,7 +1103,6 @@ class HistoryState extends State<HistoryActivity>
               labelText: 'Student',
             ),
           ),
-          SizedBox(height: 16),
           TextFormField(
             readOnly: true,
             onTap: () => _selectDate(context),
@@ -1050,59 +1116,90 @@ class HistoryState extends State<HistoryActivity>
             ),
           ),
           SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: DropdownButtonFormField<String>(
-                  value: selectedChapter,
-                  hint: Text('Select Chapter'),
-                  items: students.map((student) {
-                    return DropdownMenuItem<String>(
-                      value: 'chapter', // or any unique identifier you have
-                      child: Text('Chapter'), // or any property to display
-                    );
-                  }).toList(),
-                  onChanged: (newValue) {
-                    setState(() {
-                      selectedChapter = newValue;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Chapter',
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: DropdownButtonFormField<String>(
-                  value: selectedChapter,
-                  hint: Text('Select Chapter'),
-                  items: students.map((student) {
-                    return DropdownMenuItem<String>(
-                      value: 'verse', // or any unique identifier you have
-                      child: Text('verse'), // or any property to display
-                    );
-                  }).toList(),
-                  onChanged: (newValue) {
-                    setState(() {
-                      selectedChapter = newValue;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Verse',
-                  ),
-                ),
-              )
-            ],
+          DropdownButtonFormField<String>(
+            value: selectedBook,
+            hint: Text('Select Book'),
+            items: books.map((book) {
+              return DropdownMenuItem<String>(
+                value: book,
+                child: Text(book),
+              );
+            }).toList(),
+            onChanged: (newValue) {
+              setState(() {
+                selectedBook = newValue;
+                if (newValue == 'Quran') {
+                  _fetchChapters();
+                } else {
+                  _chapters = [];
+                  _verses = [];
+                  _selectedChapter = null;
+                  _selectedVerse = null;
+                }
+              });
+            },
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Book',
+            ),
           ),
           SizedBox(height: 16),
+          if (selectedBook == 'Quran')
+            ...[
+            DropdownButtonFormField<int>(
+              value: _selectedChapter,
+              hint: Text("Select Chapter"),
+              onChanged: (value) {
+                setState(() {
+                  _selectedChapter = value;
+                  _selectedVerse = null;
+                  _verses = [];
+                  if (value != null) {
+                    _fetchVerses(value);
+                  }
+                });
+              },
+              items: _chapters.map<DropdownMenuItem<int>>((chapter) {
+                return DropdownMenuItem<int>(
+                  value: chapter['number'],
+                  child: Text('${chapter['englishName']} (${chapter['name']})'),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Chapter',
+              ),
+            ),
+            SizedBox(height: 16),
+            DropdownButtonFormField<int>(
+              value: _selectedVerse,
+              hint: Text("Select Verse"),
+              onChanged: (value) {
+                setState(() {
+                  _selectedVerse = value;
+                  _fetchVerses(_selectedVerse!);
+                });
+              },
+              items: _verses.map<DropdownMenuItem<int>>((verse) {
+                return DropdownMenuItem<int>(
+                  value: verse['numberInSurah'],
+                  child: Text("Verse ${verse['numberInSurah']}"),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Verse',
+              ),
+            ),
+            SizedBox(height: 16),
+          ],
           ElevatedButton(
             onPressed: () {
               //TODO: Send the results to the results list
             },
+            style: ElevatedButton.styleFrom(
+                backgroundColor: ColorsRes.appcolor
+            ),
             child: Text('Submit'),
           ),
         ],

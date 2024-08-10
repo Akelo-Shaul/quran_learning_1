@@ -4,13 +4,14 @@
 import 'package:flutter/material.dart';
 
 class ColorsRes {
-  static const Color appcolor = Color(0xFF422343);
+
+  static const Color appcolor = Color(0xFF096EB6);
   static const Color white = Color(0xFFffffff);
   static const Color black = Color(0xFF000000);
   static const Color bgcolor = Color(0xffF5F8FD);
   static const Color homebgcolor = Color(0xFFf1f1f1);
-  static const Color firstgradientcolor = Color(0xFF422343);
-  static const Color secondgradientcolor = Color(0xFF683F6A);
+  static const Color firstgradientcolor = Color(0xFF096EB6);
+  static const Color secondgradientcolor = Color(0xFF0A6CB5);
   static const Color statusbarcolor = Color(0xFF683F6A);
   static const Color editboxcolor = Color(0xFFe6eefb);
 
@@ -29,9 +30,9 @@ class ColorsRes {
   static const Color cardpink = Color(0xFFFF4B95);
   static const Color cardbrown = Color(0xFF854545);
 
-  static const Color buttoncolor = Color(0xFF422343);
+  static const Color buttoncolor = Color(0xFF096EB6);
   static const Color signincolor = Color(0xFF683F6A);
-  static const Color hometitlecolor = Color(0xFF422343);
+  static const Color hometitlecolor = Color(0xFF096EB6);
   static const Color viewallcolor = Color(0xFF422343);
   static const Color datecolor = Color(0xff6c7b8a);
   static Color referurlbg = const Color(0xFF683F6A).withOpacity(0.5);

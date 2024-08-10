@@ -61,6 +61,14 @@ class DesignConfig {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
+  static const Gradient bannerGradient = LinearGradient(
+    colors: [
+      ColorsRes.white,
+      ColorsRes.appcolor,
+    ],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
 
   static const Gradient btngradient = LinearGradient(
       begin: Alignment.topCenter,

@@ -61,16 +61,10 @@ class ProfileActivityState extends State<ProfileActivity>
                     height: topheight,
                     width: double.maxFinite,
                     padding: const EdgeInsets.only(bottom: 50),
-                    child: OctoImage(
-                      image: const CachedNetworkImageProvider(
-                        "https://firebasestorage.googleapis.com/v0/b/smartkit-8e62c.appspot.com/o/cryptotech%2Fprofileback.jpg?alt=media&token=7f5818ee-c56c-417b-9355-b929e1c2326c",
-                      ),
-                      placeholderBuilder: OctoBlurHashFix.placeHolder(
-                        "LGE0tM0]].I.}a5l\$%R*ofafkBay",
-                      ),
-                      errorBuilder: OctoError.icon(color: ColorsRes.black),
-                      fit: BoxFit.fill,
-                    ),
+                      child: Image.asset(
+                        'assets/images/profileback.png',
+                        fit: BoxFit.fill,
+                      )
                   ),
                 ),
                 Align(

@@ -1,5 +1,8 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/ColorsRes.dart';
@@ -8,8 +11,6 @@ import 'package:quran_learning_1/ui/quranLearning/utils/DesignConfig.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/StringsRes.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/ease_in_widget.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/new_dialog.dart';
-
-
 
 GlobalKey<ScaffoldState>? scaffoldKey;
 
@@ -28,15 +29,41 @@ class LoginActivityState extends State<LoginActivity> {
   TextEditingController edtpsw = TextEditingController();
   TextEditingController forgotedtemail = TextEditingController();
 
-  final bool _obscureText = true;
-  bool isLoading = false, isdialogloading = false;
+  bool _obscureText = true;
+  bool isLoading = false;
+  bool isdialogloading = false;
+
+  String? username, password;
+
+  Future<http.Response> loginAPI(String user, String pass) async {
+    final response = await http.get(Uri.parse(
+        'https://alasheikquranlearningsystem.citycloudschool.co.ke/allapis/login.php?username=${user}&password=${pass}'));
+
+    if (response.statusCode == 200) {
+      return response;
+    } else {
+      // throw Exception('Failed to login: ${response.statusCode}');
+      return response;
+    }
+  }
+
+  FocusNode usernameFocusNode = FocusNode();
+  FocusNode passwordFocusNode = FocusNode();
+
 
   @override
   void initState() {
     super.initState();
-
     scaffoldKey = GlobalKey<ScaffoldState>();
   }
+
+  @override
+  void dispose() {
+    usernameFocusNode.dispose();
+    passwordFocusNode.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -71,14 +98,14 @@ class LoginActivityState extends State<LoginActivity> {
                         ),
                         Image.asset(
                           'assets/images/defaultprofile.png',
-                          // color: ColorsRes.appcolor,
-                          height: width - 100,
+                          height: width - 200,
                         ),
                         Container(
                           decoration: DesignConfig.BoxDecorationContainer(
                               ColorsRes.editboxcolor, 10),
                           margin: const EdgeInsets.only(top: 30),
-                          padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
+                          padding:
+                          const EdgeInsets.only(left: 10, top: 5, bottom: 5),
                           child: TextFormField(
                             style: const TextStyle(color: ColorsRes.appcolor),
                             cursorColor: ColorsRes.appcolor,
@@ -89,14 +116,14 @@ class LoginActivityState extends State<LoginActivity> {
                                   .textTheme
                                   .titleSmall!
                                   .merge(TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          ColorsRes.appcolor.withOpacity(0.5))),
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorsRes.appcolor.withOpacity(0.5))),
                               border: InputBorder.none,
                               errorStyle: const TextStyle(color: ColorsRes.grey),
                             ),
                             keyboardType: TextInputType.text,
                             controller: edtusername,
+                            focusNode: usernameFocusNode,
                           ),
                         ),
                         Container(
@@ -107,8 +134,10 @@ class LoginActivityState extends State<LoginActivity> {
                           child: TextFormField(
                             obscureText: _obscureText,
                             controller: edtpsw,
+                            focusNode: passwordFocusNode,
+                            keyboardType: TextInputType.text,
                             validator: (val) =>
-                                val!.isEmpty ? StringsRes.password : null,
+                            val!.isEmpty ? StringsRes.password : null,
                             style: const TextStyle(color: ColorsRes.appcolor),
                             cursorColor: ColorsRes.appcolor,
                             decoration: InputDecoration(
@@ -117,9 +146,8 @@ class LoginActivityState extends State<LoginActivity> {
                                   .textTheme
                                   .titleSmall!
                                   .merge(TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          ColorsRes.appcolor.withOpacity(0.5))),
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorsRes.appcolor.withOpacity(0.5))),
                               border: InputBorder.none,
                             ),
                           ),
@@ -146,19 +174,61 @@ class LoginActivityState extends State<LoginActivity> {
                         const SizedBox(height: 20),
                         isLoading
                             ? const Center(
-                                child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: CircularProgressIndicator(),
-                              ))
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
                             : Container(),
                         EaseInWidget(
                           onTap: () async {
-                            Constant.GoToMainPage("login", context);
+                            setState(() {
+                              isLoading = true;
+                            });
+
+                            try {
+                              username = edtusername.text;
+                              password = edtpsw.text;
+
+
+                              var response = await loginAPI(username!, password!);
+                              var decodedResponse = json.decode(response.body);
+
+                              print(decodedResponse['code'].runtimeType);
+
+                              if (decodedResponse['code'] == 200) {
+                                print('Redirecting to main page');
+                                Constant.GoToMainPage("login", context);
+                              } else {
+                                if(decodedResponse['message'] == 'Username not provided'){
+                                  FocusScope.of(context).requestFocus(usernameFocusNode);
+                                }else if(decodedResponse['message'] == 'Username or Password Incorrect'){
+                                  FocusScope.of(context).requestFocus(passwordFocusNode);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Incorrect username or password',),
+                                      margin: EdgeInsets.only(bottom: 50),
+                                    ),
+                                  );
+
+                                }else{
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(decodedResponse['message'])),
+                                  );
+                                }
+                                print("Login failed: ${response.statusCode}");
+                              }
+                            } catch (e) {
+                              print("Error: $e");
+                            } finally {
+                              setState(() {
+                                isLoading = false;
+                              });
+                            }
                           },
                           child: DesignConfig.ButtonWithShadowNew(
                               StringsRes.login.toUpperCase(), context),
                         ),
-
                         const SizedBox(height: 12),
                         SizedBox(
                           height: toppadding - 80,
@@ -221,7 +291,9 @@ class ForgotAlert extends State<ForgotDialog> {
       actions: <Widget>[
         TextButton(
           child: Text(StringsRes.recover_password),
-          onPressed: () async {},
+          onPressed: () async {
+            // Implement password recovery logic
+          },
         ),
         TextButton(
           child: Text(StringsRes.cancel),

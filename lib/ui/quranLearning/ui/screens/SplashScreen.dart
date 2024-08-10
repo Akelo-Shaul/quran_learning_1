@@ -35,11 +35,11 @@ class _QuranSplashScreenState extends State<QuranSplashScreen> {
       child: Scaffold(
         body: Container(
           decoration: const BoxDecoration(
-            gradient: DesignConfig.gradient,
+            gradient: DesignConfig.bannerGradient,
           ),
           child: Center(
             child: Image.asset(
-              'assets/images/avatar.jpg',
+              'assets/images/allogo.png',
               height: MediaQuery.of(context).size.width - 130,
             ),
           ),

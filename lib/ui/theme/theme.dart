@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quran_learning_1/ui/quranLearning/utils/ColorsRes.dart';
 import 'package:quran_learning_1/ui/theme/colors.dart';
 
 class ThemeAndRTLState {
@@ -22,6 +23,19 @@ class ThemeAndRTLCubit extends Cubit<ThemeAndRTLState> {
                 onSurface: const Color(0xffF7F9FC),
                 primary: colorThemes.first.primaryColor,
                 primaryContainer: colorThemes.first.darkPrimaryColor,
+              ),
+              snackBarTheme: SnackBarThemeData(
+                backgroundColor: Colors.grey[400],
+                contentTextStyle: TextStyle(color: Colors.blue),
+                elevation: 6.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15), // Rounded corners
+                  // side: BorderSide(
+                  //     // color: ColorsRes.appcolor,
+                  //     width: 1
+                  // ), // Blue border
+                ),
+                behavior: SnackBarBehavior.floating, // Makes the SnackBar float
               ),
             ),
             TextDirection.ltr,

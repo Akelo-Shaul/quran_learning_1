@@ -230,7 +230,7 @@ class _HomePageState extends State<HomePage> {
                                 const SizedBox(width: 10),
                                 Text(
                                   // StringsRes.buycoin,
-                                  'Reports',
+                                  'Results',
                                   style: TextStyle(
                                       color: ColorsRes.firstgradientcolor,
                                       fontWeight: FontWeight.bold),
