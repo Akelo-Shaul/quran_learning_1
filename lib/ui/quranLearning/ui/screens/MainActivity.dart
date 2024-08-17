@@ -32,8 +32,9 @@ List<Amount>? mainamountlist;
 class MainActivity extends StatefulWidget {
   final String from;
   final int selectedPosition;
+  final Map<String, dynamic> data;
 
-  MainActivity(this.from, this.selectedPosition, {Key? key}) : super(key: key);
+  MainActivity({required this.from, required this.selectedPosition, required this.data, Key? key}) : super(key: key);
 
   @override
   MainActivityState createState() => MainActivityState(this.from);
@@ -46,9 +47,18 @@ class MainActivityState extends State<MainActivity> {
 
   MainActivityState(this.from);
 
+  String get displayName => widget.data['fullname'] ?? 'User';
+
+  late final Map<String, dynamic> data;
+
   @override
   void initState() {
     super.initState();
+
+
+    data = widget.data;
+
+    print(widget.data.runtimeType);
 
     mainamountlist = [];
     mainresultlist = [];
@@ -128,15 +138,18 @@ class MainActivityState extends State<MainActivity> {
   }
 
   Widget bodyContainer() {
+
+    final Map<String, dynamic> data = widget.data;
+
     switch (selectedPos) {
       case 0:
-        return HomePage();
+        return HomePage(data: data,);
       case 1:
         return HistoryActivity(0);
       case 2:
-        return ProfileActivity();
+        return ProfileActivity(data: data,);
       default:
-        return HomePage();
+        return HomePage(data: data,);
     }
   }
 
@@ -197,7 +210,7 @@ class MainActivityState extends State<MainActivity> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'The username',
+                      '${displayName}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: ColorsRes.white,
@@ -234,7 +247,7 @@ class MainActivityState extends State<MainActivity> {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileActivity()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileActivity(data: data,)));
                 },
               ),
               ListTile(

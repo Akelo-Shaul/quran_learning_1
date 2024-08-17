@@ -19,7 +19,10 @@ TextStyle? textStyle;
 final _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class ProfileActivity extends StatefulWidget {
-  const ProfileActivity({Key? key}) : super(key: key);
+
+  final Map<String, dynamic> data;
+
+  const ProfileActivity({required this.data, Key? key}) : super(key: key);
 
   @override
   ProfileActivityState createState() => ProfileActivityState();
@@ -28,6 +31,9 @@ class ProfileActivity extends StatefulWidget {
 class ProfileActivityState extends State<ProfileActivity>
     with SingleTickerProviderStateMixin {
   double topheight = 250;
+
+  String get displayName => widget.data['fullname'] ?? 'User';
+
   String? from;
   @override
   void initState() {
@@ -89,7 +95,7 @@ class ProfileActivityState extends State<ProfileActivity>
           Center(
               child: Text(
                   // UIData.username,
-                'THe username',
+                '${displayName}',
                   style: Theme.of(context).textTheme.titleLarge!.merge(TextStyle(
                       color: ColorsRes.black, fontWeight: FontWeight.bold)))),
           Center(

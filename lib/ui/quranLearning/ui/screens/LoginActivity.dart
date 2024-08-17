@@ -11,6 +11,7 @@ import 'package:quran_learning_1/ui/quranLearning/utils/DesignConfig.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/StringsRes.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/ease_in_widget.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/new_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 GlobalKey<ScaffoldState>? scaffoldKey;
 
@@ -46,6 +47,19 @@ class LoginActivityState extends State<LoginActivity> {
       return response;
     }
   }
+
+  // Get the user details from details API
+  Future<http.Response> userDetails(String userID) async {
+    final response = await http.get(Uri.parse(
+        'https://alasheikquranlearningsystem.citycloudschool.co.ke/allapis/profile.php?userID=${userID}'));
+
+    if(userID != null && userID.isNotEmpty){
+      return response;
+    }else{
+      throw Exception('User has no data');
+    }
+  }
+
 
   FocusNode usernameFocusNode = FocusNode();
   FocusNode passwordFocusNode = FocusNode();
@@ -194,11 +208,15 @@ class LoginActivityState extends State<LoginActivity> {
                               var response = await loginAPI(username!, password!);
                               var decodedResponse = json.decode(response.body);
 
-                              print(decodedResponse['code'].runtimeType);
+                              var userDets = await userDetails(decodedResponse['user_id']);
+                              var allUserDeats = json.decode(userDets.body);
+
+                              // print(decodedResponse['code'].runtimeType);
 
                               if (decodedResponse['code'] == 200) {
+
                                 print('Redirecting to main page');
-                                Constant.GoToMainPage("login", context);
+                                Constant.GoToMainPage("login", context, allUserDeats);
                               } else {
                                 if(decodedResponse['message'] == 'Username not provided'){
                                   FocusScope.of(context).requestFocus(usernameFocusNode);

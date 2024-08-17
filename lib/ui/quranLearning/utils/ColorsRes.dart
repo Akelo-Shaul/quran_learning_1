@@ -12,11 +12,11 @@ class ColorsRes {
   static const Color homebgcolor = Color(0xFFf1f1f1);
   static const Color firstgradientcolor = Color(0xFF096EB6);
   static const Color secondgradientcolor = Color(0xFF0A6CB5);
-  static const Color statusbarcolor = Color(0xFF683F6A);
+  static const Color statusbarcolor = Color(0xFF0F6097);
   static const Color editboxcolor = Color(0xFFe6eefb);
 
-  static const Color txtlightcolor = Color(0xFF683F6A);
-  static const Color txtmaincolor = Color(0xFF422343);
+  static const Color txtlightcolor = Color(0xFF419EE1);
+  static const Color txtmaincolor = Color(0xFF096EB6);
   static const Color txtgreycolor = Color(0xFFA6A0A7);
 
   static const Color btnlightshadow = Color(0x1affffff);
@@ -77,18 +77,18 @@ class ColorsRes {
   static const Color unreadnotification = Color(0xffe7f6fd);
 
   static const MaterialColor appcolor_material = MaterialColor(
-    0xFF422343,
+    0xFF0F6097,
     <int, Color>{
-      50: Color(0xFF422343),
-      100: Color(0xFF422343),
-      200: Color(0xFF422343),
-      300: Color(0xFF422343),
-      400: Color(0xFF422343),
-      500: Color(0xFF422343),
-      600: Color(0xFF422343),
-      700: Color(0xFF422343),
-      800: Color(0xFF422343),
-      900: Color(0xFF422343),
+      50: Color(0xFF0F6097),
+      100: Color(0xFF0F6097),
+      200: Color(0xFF0F6097),
+      300: Color(0xFF0F6097),
+      400: Color(0xFF0F6097),
+      500: Color(0xFF0F6097),
+      600: Color(0xFF0F6097),
+      700: Color(0xFF0F6097),
+      800: Color(0xFF0F6097),
+      900: Color(0xFF0F6097),
     },
   );
 }

@@ -20,13 +20,19 @@ import 'package:quran_learning_1/ui/snippets/helper/octoBlurHash.dart';
 List<SliderImage>? sliderimagelist;
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+
+  final Map<String, dynamic> data;
+
+  HomePage({required this.data, Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+
+  String get displayName => widget.data['fullname'] ?? 'User';
+
   int msgcount = 2;
   double leftrightpadding = 20;
   bool ispm = true,
@@ -121,7 +127,7 @@ class _HomePageState extends State<HomePage> {
                                     fontWeight: FontWeight.bold,
                                     color: ColorsRes.white,
                                   ))),
-                              Text('I am the Useeer',
+                              Text('${displayName}',
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleLarge!

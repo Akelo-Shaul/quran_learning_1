@@ -31,11 +31,19 @@ class Constant {
   static String usdt = "USDT";
   static String pm = "PM";
 
-  static void GoToMainPage(String from, BuildContext context) {
+  static void GoToMainPage(String from, BuildContext context, Map<String, dynamic> data) {
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => MainActivity(from, 0)),
-            (Route<dynamic> route) => false);
+      MaterialPageRoute(
+        builder: (context) => MainActivity(
+          from: from,
+          selectedPosition: 0,
+          data: data,
+        ),
+      ),
+          (Route<dynamic> route) => false,
+    );
   }
+
 
 
   static Widget ImageWidget(String path, double imgheight, double imgwidth) {
