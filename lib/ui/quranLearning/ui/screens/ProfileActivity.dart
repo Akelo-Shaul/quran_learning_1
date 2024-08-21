@@ -12,6 +12,7 @@ import 'package:quran_learning_1/ui/quranLearning/utils/StringsRes.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/UIData.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/new_dialog.dart';
 import 'package:quran_learning_1/ui/snippets/helper/octoBlurHash.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -40,6 +41,16 @@ class ProfileActivityState extends State<ProfileActivity>
     super.initState();
   }
 
+  void logout() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('session_token'); // Clear the session token
+
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      "/login",
+      (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +198,9 @@ class ProfileActivityState extends State<ProfileActivity>
                   dense: true,
                 ),
                 ListTile(
-                  onTap: () {},
+                  onTap: () {
+                    logout();
+                  },
                   leading: SvgPicture.asset(
                     'assets/images/pro_logout.svg',
                     height: MediaQuery.of(context).size.width / 16,

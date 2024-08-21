@@ -30,6 +30,7 @@ class StringsRes {
   static String result = 'Results';
   static String feeStatement = 'Fee';
   static String attendance = 'Attendance';
+  static String feebalance = "Fee Balance";
 
   static String change_password = "Change Password";
   static String enter_new_password = "Enter New Password";

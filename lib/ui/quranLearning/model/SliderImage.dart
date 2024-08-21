@@ -1,18 +1,23 @@
 class SliderImage {
-  String? id, image,blurUrl,localimg;
-  SliderImage( {
-    this.id,
-    this.image,
-    this.blurUrl,
-    this.localimg,
+  String? bannerId, bannerName,bannerLink,dateAdded;
+  SliderImage({
+    required this.bannerId,
+    required this.bannerName,
+    required this.bannerLink,
+    required this.dateAdded,
   });
 
-  factory SliderImage.fromJson(Map<String,dynamic> json) {
+  factory SliderImage.fromJson(Map<String, dynamic> json) {
     return SliderImage(
-      id: json["id"].toString(),
-      image: json["image"],
-      blurUrl: json["blurUrl"],
-      localimg: json["localimg"],
+      bannerId: json['banner_id'] ?? '',
+      bannerName: json['banner_name'] ?? '',
+      bannerLink: json['banner_link'] ?? '',
+      dateAdded: json['date_added'] ?? '',
     );
+  }
+
+  @override
+  String toString() {
+    return 'SliderImage(bannerId: $bannerId, bannerName: $bannerName, bannerLink: $bannerLink, dateAdded: $dateAdded)';
   }
 }

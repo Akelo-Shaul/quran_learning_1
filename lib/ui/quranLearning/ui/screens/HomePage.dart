@@ -6,8 +6,12 @@ import 'package:octo_image/octo_image.dart';
 import 'package:quran_learning_1/ui/quranLearning/model/Amount.dart';
 import 'package:quran_learning_1/ui/quranLearning/model/Result.dart';
 import 'package:quran_learning_1/ui/quranLearning/model/SliderImage.dart';
+import 'package:quran_learning_1/ui/quranLearning/ui/screens/AcademicRecProgressWebView.dart';
 import 'package:quran_learning_1/ui/quranLearning/ui/screens/HistoryActivity.dart';
 import 'package:quran_learning_1/ui/quranLearning/ui/screens/MainActivity.dart';
+import 'package:quran_learning_1/ui/quranLearning/ui/screens/PaymentRecordsWebView.dart';
+import 'package:quran_learning_1/ui/quranLearning/ui/screens/ResultsStudentWebView.dart';
+import 'package:quran_learning_1/ui/quranLearning/ui/screens/ResultsWebView.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/ColorsRes.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/Constant.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/DesignConfig.dart';
@@ -16,6 +20,8 @@ import 'package:quran_learning_1/ui/quranLearning/utils/StringsRes.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/UIData.dart';
 import 'package:quran_learning_1/ui/snippets/helper/octoBlurHash.dart';
 
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 List<SliderImage>? sliderimagelist;
 
@@ -33,6 +39,58 @@ class _HomePageState extends State<HomePage> {
 
   String get displayName => widget.data['fullname'] ?? 'User';
 
+  String get feeBalance => widget.data['fee_balance'] ?? '0';
+
+  String get userType => widget.data['user_type'] ?? 'Student';
+
+  late List<SliderImage>? sliderimagelist;
+
+  static late List<Map<String, dynamic>> sliderimagedata;
+
+  static List<SliderImage> getSliderImageList() {
+    List<SliderImage> sliderimagelist = [];
+    for(var model in sliderimagedata){
+      // print(model.runtimeType);
+      SliderImage sliderImage = SliderImage.fromJson( model as Map<String, dynamic>);
+      sliderimagelist.add(sliderImage);
+      // print(sliderimagelist);
+      for (var item in sliderimagelist){
+        print(item.bannerLink);
+      }
+      // print(sliderImage.bannerLink);
+
+    }
+    // for (Map model in sliderimagedata) {
+    //   SliderImage sliderImage = SliderImage.fromJson(model as Map<String, dynamic>);    as Map<String,dynamic>
+    //   sliderimagelist.add(sliderImage);
+    //   print('Slider Image: $sliderImage'); // Add this line
+    // }
+    return sliderimagelist;
+  }
+
+  static Future<void> fetchBanners() async {
+    final url = 'https://alasheikquranlearningsystem.citycloudschool.co.ke/allapis/banners.php';
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        List<dynamic> banners = json.decode(response.body);
+        // print('Banners: $banners'); // Add this line
+        sliderimagedata = banners.map((banner) {
+          return {
+            "banner_id": banner["banner_id"],
+            "banner_name": banner["banner_name"],
+            "banner_link": banner["banner_link"],
+            "date_added": banner["date_added"],
+          };
+        }).toList();
+      } else {
+        throw Exception('Failed to load banners');
+      }
+    } catch (e){
+      print('Error fetching banners: $e');
+    }
+  }
+
   int msgcount = 2;
   double leftrightpadding = 20;
   bool ispm = true,
@@ -45,8 +103,16 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    sliderimagelist = [];
-    sliderimagelist = UIData.getSliderImageList();
+
+    fetchBanners().then((_) {
+      getSliderImageList();
+      setState(() {
+        sliderimagelist = getSliderImageList();
+      });
+    });
+
+    // sliderimagelist = [];
+    // sliderimagelist = UIData.getSliderImageList();
     super.initState();
   }
 
@@ -149,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 // Text("\t\t${StringsRes.walletbalance}",
-                                Text("Fee BalancE",
+                                Text("Fee Balance",
                                     style: TextStyle(
                                         color: ColorsRes.white.withOpacity(0.7),
                                         fontWeight: FontWeight.bold)),
@@ -161,7 +227,7 @@ class _HomePageState extends State<HomePage> {
                                                 .withOpacity(0.7),
                                             fontWeight: FontWeight.w600)),
                                     // Text("\t${UIData.walletbalance}",
-                                      Text('50000',
+                                      Text('${feeBalance}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleLarge!
@@ -173,35 +239,35 @@ class _HomePageState extends State<HomePage> {
                               ],
                             ),
                           ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                // Text("\t\t${StringsRes.bankingbalance}",
-                                Text('Last Results',
-                                      style: TextStyle(
-                                        color: ColorsRes.white.withOpacity(0.7),
-                                        fontWeight: FontWeight.bold)),
-                                Row(
-                                  children: [
-                                    Text("\t\t${Constant.CURRENCYSYMBOL}",
-                                        style: TextStyle(
-                                            color: ColorsRes.white
-                                                .withOpacity(0.7),
-                                            fontWeight: FontWeight.w600)),
-                                    // Text("\t${UIData.bankbalance}",
-                                    Text("Benki balanci",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleLarge!
-                                            .merge(TextStyle(
-                                            color: ColorsRes.white,
-                                            fontWeight: FontWeight.w600))),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                          // Expanded(
+                          //   child: Column(
+                          //     crossAxisAlignment: CrossAxisAlignment.start,
+                          //     children: <Widget>[
+                          //       // Text("\t\t${StringsRes.bankingbalance}",
+                          //       Text('Last Results',
+                          //             style: TextStyle(
+                          //               color: ColorsRes.white.withOpacity(0.7),
+                          //               fontWeight: FontWeight.bold)),
+                          //       Row(
+                          //         children: [
+                          //           Text("\t\t${Constant.CURRENCYSYMBOL}",
+                          //               style: TextStyle(
+                          //                   color: ColorsRes.white
+                          //                       .withOpacity(0.7),
+                          //                   fontWeight: FontWeight.w600)),
+                          //           // Text("\t${UIData.bankbalance}",
+                          //           Text("Benki balanci",
+                          //               style: Theme.of(context)
+                          //                   .textTheme
+                          //                   .titleLarge!
+                          //                   .merge(TextStyle(
+                          //                   color: ColorsRes.white,
+                          //                   fontWeight: FontWeight.w600))),
+                          //         ],
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
                         ],
                       )),
                 ],
@@ -222,7 +288,7 @@ class _HomePageState extends State<HomePage> {
                         child: GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => HistoryActivity(0)));
+                                builder: (context) =>userType == 'Teacher' ? ResultsWebView(userId: widget.data['userID'], data: widget.data,) : ResultsStudentWebView(userId: widget.data['userID'], data: widget.data,)));
                             //     builder: (context) => SellActivity(1, -1)));
                           },
                           child: Padding(
@@ -251,7 +317,7 @@ class _HomePageState extends State<HomePage> {
                           onTap: () async {
                             Navigator.of(context).push(MaterialPageRoute(
                             //     builder: (context) => SellActivity(0, -1)));
-                                builder: (context) => HistoryActivity(2)));
+                                builder: (context) => userType == 'Student' ? PaymentRecordsWebView(userId: widget.data['userID'], data: widget.data,) : AcademicRecProgressWebView(userId: widget.data['userID'], data: widget.data,)));
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -265,7 +331,7 @@ class _HomePageState extends State<HomePage> {
                                 const SizedBox(width: 10),
                                 Text(
                                   // StringsRes.sellcoin,
-                                  'Fee Statement',
+                                  userType == 'Student' ? 'Fee Statement' : 'Records',
                                   style: TextStyle(
                                       color: ColorsRes.firstgradientcolor,
                                       fontWeight: FontWeight.bold),

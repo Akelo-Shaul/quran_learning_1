@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_this, no_logic_in_create_state, non_constant_identifier_names
-
 import 'dart:async';
 import 'dart:io';
 
@@ -10,12 +8,14 @@ import 'package:quran_learning_1/ui/quranLearning/model/Amount.dart';
 import 'package:quran_learning_1/ui/quranLearning/model/Result.dart';
 import 'package:quran_learning_1/ui/quranLearning/ui/screens/HistoryActivity.dart';
 import 'package:quran_learning_1/ui/quranLearning/ui/screens/HomePage.dart';
+import 'package:quran_learning_1/ui/quranLearning/ui/screens/LoginActivity.dart';
 import 'package:quran_learning_1/ui/quranLearning/ui/screens/ProfileActivity.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/ColorsRes.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/Constant.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/DesignConfig.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/StringsRes.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/UIData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../app/routes.dart';
 
@@ -28,6 +28,7 @@ GlobalKey<ScaffoldState>? scafolldmain;
 
 List<Result>? mainresultlist;
 List<Amount>? mainamountlist;
+
 
 class MainActivity extends StatefulWidget {
   final String from;
@@ -45,27 +46,48 @@ class MainActivityState extends State<MainActivity> {
   int? selectedPos;
   Color homeStatusbarcolor = ColorsRes.statusbarcolor;
 
-  MainActivityState(this.from);
-
   String get displayName => widget.data['fullname'] ?? 'User';
 
+  MainActivityState(this.from);
+
   late final Map<String, dynamic> data;
+
+  Future<void> checkSession() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? user = prefs.getString('user');
+
+    if (user != null) {
+      // Session is valid, proceed with loading the main content
+    } else {
+      // No session token, redirect to login page
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        Routes.login,
+            (route) => false,
+      );
+    }
+  }
+
+  void logout() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('user'); // Clear the session token
+
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      Routes.login,
+          (route) => false,
+    );
+  }
 
   @override
   void initState() {
     super.initState();
-
-
     data = widget.data;
 
-    print(widget.data.runtimeType);
-
-    mainamountlist = [];
-    mainresultlist = [];
+    checkSession();
 
     mainamountlist = UIData.getAmountList();
     mainresultlist = UIData.getResultList();
-
 
     scafolldmain = GlobalKey<ScaffoldState>();
 
@@ -138,18 +160,17 @@ class MainActivityState extends State<MainActivity> {
   }
 
   Widget bodyContainer() {
-
     final Map<String, dynamic> data = widget.data;
 
     switch (selectedPos) {
       case 0:
-        return HomePage(data: data,);
+        return HomePage(data: data);
       case 1:
         return HistoryActivity(0);
       case 2:
-        return ProfileActivity(data: data,);
+        return ProfileActivity(data: data);
       default:
-        return HomePage(data: data,);
+        return HomePage(data: data);
     }
   }
 
@@ -293,7 +314,7 @@ class MainActivityState extends State<MainActivity> {
                               style: TextStyle(color: ColorsRes.secondgradientcolor),
                             ),
                             onPressed: () {
-                              Navigator.pop(context);
+                              logout();
                             },
                           ),
                         ],
@@ -309,3 +330,6 @@ class MainActivityState extends State<MainActivity> {
     );
   }
 }
+
+
+

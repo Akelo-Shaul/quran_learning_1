@@ -135,10 +135,10 @@ class ImageSliderWidgetState extends State<ImageSliderWidget> {
       child: GestureDetector(
         onTap: () {},
         child: OctoImage(
-          image: CachedNetworkImageProvider(sliderimage.image!),
-          placeholderBuilder: OctoBlurHashFix.placeHolder(
-            sliderimage.blurUrl!,
-          ),
+          image: CachedNetworkImageProvider(sliderimage.bannerLink!),
+          // placeholderBuilder: OctoBlurHashFix.placeHolder(
+          //   sliderimage.blurUrl!,
+          // ),
           errorBuilder: OctoError.icon(color: ColorsRes.black),
           fit: widget.from == "fullscreen" ? BoxFit.contain : BoxFit.fill,
         ),

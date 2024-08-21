@@ -79,6 +79,7 @@ class LoginActivityState extends State<LoginActivity> {
   }
 
 
+
   @override
   Widget build(BuildContext context) {
     double toppadding = 2 * kToolbarHeight;
@@ -211,9 +212,13 @@ class LoginActivityState extends State<LoginActivity> {
                               var userDets = await userDetails(decodedResponse['user_id']);
                               var allUserDeats = json.decode(userDets.body);
 
+                              String allUserDeatsString = jsonEncode(allUserDeats);
+
                               // print(decodedResponse['code'].runtimeType);
 
                               if (decodedResponse['code'] == 200) {
+                                final SharedPreferences prefs = await SharedPreferences.getInstance();
+                                prefs.setString("user", allUserDeatsString);
 
                                 print('Redirecting to main page');
                                 Constant.GoToMainPage("login", context, allUserDeats);
