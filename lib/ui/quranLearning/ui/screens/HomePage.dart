@@ -39,6 +39,8 @@ class _HomePageState extends State<HomePage> {
 
   String get displayName => widget.data['fullname'] ?? 'User';
 
+  String get userId => widget.data['userID'] ?? null;
+
   String get feeBalance => widget.data['fee_balance'] ?? '0';
 
   String get userType => widget.data['user_type'] ?? 'Student';
@@ -46,6 +48,9 @@ class _HomePageState extends State<HomePage> {
   late List<SliderImage>? sliderimagelist;
 
   static late List<Map<String, dynamic>> sliderimagedata;
+
+  bool isLoading = true;
+
 
   static List<SliderImage> getSliderImageList() {
     List<SliderImage> sliderimagelist = [];
@@ -55,7 +60,7 @@ class _HomePageState extends State<HomePage> {
       sliderimagelist.add(sliderImage);
       // print(sliderimagelist);
       for (var item in sliderimagelist){
-        print(item.bannerLink);
+        // print(item.bannerLink);
       }
       // print(sliderImage.bannerLink);
 
@@ -91,6 +96,36 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<http.Response> feeReport(String userID) async {
+    if (userID == null || userID.isEmpty) {
+      throw Exception('User has no data');
+    }
+
+    final response = await http.get(Uri.parse(
+        'https://alasheikquranlearningsystem.citycloudschool.co.ke/allapis/recent_fee.php?admno=$userID'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> feeReports = json.decode(response.body);
+
+      UIData.amountdata = [];
+
+      for (var report in feeReports) {
+        String amountPaid = report['amount_paid'].toString();
+        String dateOfPay = report['dateofpay'].toString();
+
+        // Add the payment data to the amountdata list
+        UIData.addPaymentData(amountPaid, dateOfPay);
+      }
+
+      print(UIData.amountdata);
+      // TODO: Use this UI data to show the fee payments made
+      return response;
+    } else {
+      throw Exception('Failed to load fee report');
+    }
+  }
+
+
   int msgcount = 2;
   double leftrightpadding = 20;
   bool ispm = true,
@@ -101,16 +136,28 @@ class _HomePageState extends State<HomePage> {
       isltc = true,
       isusdt = true;
 
-  @override
-  void initState() {
+  void fetchSliderImages() async {
+    // Simulate API call
+    await Future.delayed(Duration(seconds: 2));
 
     fetchBanners().then((_) {
       getSliderImageList();
       setState(() {
+        // await Future.delayed(Duration(seconds: 2));
         sliderimagelist = getSliderImageList();
+        isLoading = false;
       });
     });
+  }
 
+  @override
+  void initState() {
+    feeReport(userId).then((_){
+      setState(() {
+        mainamountlist = UIData.getAmountList();
+      });
+    });
+    fetchSliderImages();
     // sliderimagelist = [];
     // sliderimagelist = UIData.getSliderImageList();
     super.initState();
@@ -168,17 +215,18 @@ class _HomePageState extends State<HomePage> {
                         shape: DesignConfig.SetRoundedBorder(
                             ColorsRes.appcolor, 10),
                         clipBehavior: Clip.antiAliasWithSaveLayer,
-                        child: OctoImage(
-                          image: const CachedNetworkImageProvider(
-                              "https://firebasestorage.googleapis.com/v0/b/smartkit-8e62c.appspot.com/o/cryptotech%2Fprofilepic.jpg?alt=media&token=2be2819f-6007-4763-a727-cb93f08f460c"),
-                          placeholderBuilder: OctoBlurHashFix.placeHolder(
-                            "LNIX]g_3.TIU%NRjRPxukXR*s9of",
-                          ),
-                          width: 60,
-                          height: 60,
-                          errorBuilder: OctoError.icon(color: ColorsRes.black),
-                          fit: BoxFit.fill,
-                        ),
+                        // child: OctoImage(
+                        //   image: const CachedNetworkImageProvider(
+                        //       "https://firebasestorage.googleapis.com/v0/b/smartkit-8e62c.appspot.com/o/cryptotech%2Fprofilepic.jpg?alt=media&token=2be2819f-6007-4763-a727-cb93f08f460c"),
+                        //   placeholderBuilder: OctoBlurHashFix.placeHolder(
+                        //     "LNIX]g_3.TIU%NRjRPxukXR*s9of",
+                        //   ),
+                        //   width: 60,
+                        //   height: 60,
+                        //   errorBuilder: OctoError.icon(color: ColorsRes.black),
+                        //   fit: BoxFit.fill,
+                        // ),
+                        child: Constant.ImageWidget(UIData.profileimage, 60, 60),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
@@ -239,35 +287,6 @@ class _HomePageState extends State<HomePage> {
                               ],
                             ),
                           ),
-                          // Expanded(
-                          //   child: Column(
-                          //     crossAxisAlignment: CrossAxisAlignment.start,
-                          //     children: <Widget>[
-                          //       // Text("\t\t${StringsRes.bankingbalance}",
-                          //       Text('Last Results',
-                          //             style: TextStyle(
-                          //               color: ColorsRes.white.withOpacity(0.7),
-                          //               fontWeight: FontWeight.bold)),
-                          //       Row(
-                          //         children: [
-                          //           Text("\t\t${Constant.CURRENCYSYMBOL}",
-                          //               style: TextStyle(
-                          //                   color: ColorsRes.white
-                          //                       .withOpacity(0.7),
-                          //                   fontWeight: FontWeight.w600)),
-                          //           // Text("\t${UIData.bankbalance}",
-                          //           Text("Benki balanci",
-                          //               style: Theme.of(context)
-                          //                   .textTheme
-                          //                   .titleLarge!
-                          //                   .merge(TextStyle(
-                          //                   color: ColorsRes.white,
-                          //                   fontWeight: FontWeight.w600))),
-                          //         ],
-                          //       ),
-                          //     ],
-                          //   ),
-                          // ),
                         ],
                       )),
                 ],
@@ -288,7 +307,8 @@ class _HomePageState extends State<HomePage> {
                         child: GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) =>userType == 'Teacher' ? ResultsWebView(userId: widget.data['userID'], data: widget.data,) : ResultsStudentWebView(userId: widget.data['userID'], data: widget.data,)));
+                                builder: (context) =>userType == 'Teacher' ? ResultsWebView(userId: widget.data['userID'], data: widget.data, showBottomNavigationBar: true,) : ResultsStudentWebView(userId: widget.data['userID'], data: widget.data,showBottomNavigationBar: true,))
+                            );
                             //     builder: (context) => SellActivity(1, -1)));
                           },
                           child: Padding(
@@ -301,8 +321,7 @@ class _HomePageState extends State<HomePage> {
                                     MediaQuery.of(context).size.width / 16),
                                 const SizedBox(width: 10),
                                 Text(
-                                  // StringsRes.buycoin,
-                                  'Results',
+                                  userType == 'Teacher' ? 'Record' : 'Performance',
                                   style: TextStyle(
                                       color: ColorsRes.firstgradientcolor,
                                       fontWeight: FontWeight.bold),
@@ -317,7 +336,7 @@ class _HomePageState extends State<HomePage> {
                           onTap: () async {
                             Navigator.of(context).push(MaterialPageRoute(
                             //     builder: (context) => SellActivity(0, -1)));
-                                builder: (context) => userType == 'Student' ? PaymentRecordsWebView(userId: widget.data['userID'], data: widget.data,) : AcademicRecProgressWebView(userId: widget.data['userID'], data: widget.data,)));
+                                builder: (context) => userType == 'Teacher' ? AcademicRecProgressWebView(userId: widget.data['userID'], data: widget.data,) : PaymentRecordsWebView(userId: widget.data['userID'], data: widget.data,)));
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -331,7 +350,7 @@ class _HomePageState extends State<HomePage> {
                                 const SizedBox(width: 10),
                                 Text(
                                   // StringsRes.sellcoin,
-                                  userType == 'Student' ? 'Fee Statement' : 'Records',
+                                  userType == 'Teacher' ? 'Reports' : 'Fee Statement' ,
                                   style: TextStyle(
                                       color: ColorsRes.firstgradientcolor,
                                       fontWeight: FontWeight.bold),
@@ -351,7 +370,9 @@ class _HomePageState extends State<HomePage> {
         Padding(
           padding: EdgeInsets.only(
               right: leftrightpadding, left: leftrightpadding, top: 10),
-          child: ImageSliderWidget(
+          child: isLoading
+              ? Center(child: LinearProgressIndicator())
+          : ImageSliderWidget(
             from: "main",
             imageUrls: sliderimagelist,
             imageBorderRadius: BorderRadius.circular(15),
@@ -361,39 +382,6 @@ class _HomePageState extends State<HomePage> {
         ),
         Column(
           children: [
-            Padding(
-              padding: EdgeInsets.only(
-                  top: 10, left: leftrightpadding, right: leftrightpadding),
-              child: Row(children: <Widget>[
-                Expanded(
-                  child: Text(
-                    // StringsRes.recent_transaction,
-                    'Recent Results',
-                    style:
-                    Theme.of(context).textTheme.titleMedium!.merge(TextStyle(
-                      color: ColorsRes.hometitlecolor,
-                      fontWeight: FontWeight.w600,
-                    )),
-                  ),
-                ), // Defaults to a flex of one.
-                GestureDetector(
-                  child: Text(StringsRes.lblmore,
-                      style: TextStyle(
-                        color: ColorsRes.viewallcolor,
-                        fontWeight: FontWeight.w300,
-                      )),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => HistoryActivity(0)));
-                  },
-                ),
-              ]),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                  top: 10, left: leftrightpadding, right: leftrightpadding),
-              child: resultListWidget(),
-            ),
             Padding(
               padding: EdgeInsets.only(
                   top: 20, left: leftrightpadding, right: leftrightpadding),
@@ -421,77 +409,50 @@ class _HomePageState extends State<HomePage> {
                 ),
               ]),
             ),
-            Padding(
-              padding: EdgeInsets.only(
-                  top: 10, left: leftrightpadding, right: leftrightpadding),
-              child: feeListWidget(),
-            ),
+            if(userType != 'Teacher')
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 10,
+                  left: leftrightpadding,
+                  right: leftrightpadding,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start, // Aligns children to the start of the column
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Amount',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .merge(TextStyle(
+                            color: ColorsRes.appcolor,
+                            fontWeight: FontWeight.w700,
+                          )),
+                        ),
+                        Text(
+                          'Date',
+                          style: Theme.of(context).textTheme.bodySmall!.merge(
+                            TextStyle(
+                              color: ColorsRes.grey.withOpacity(0.6),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10), // Adds spacing between the Row and feeListWidget
+                    feeListWidget(),
+                  ],
+                ),
+              )
+            ,
           ],
         ),
       ]),
     );
-  }
-
-  Widget resultListWidget() {
-    return ListView.separated(
-        separatorBuilder: (BuildContext context, int index) => Divider(
-          color: ColorsRes.grey,
-          endIndent: 3,
-          indent: 3,
-          thickness: 0.8,
-          height: 0,
-        ),
-        padding: const EdgeInsets.only(bottom: 8),
-        physics: const ClampingScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: mainresultlist!.length > 5 ? 5 : mainresultlist!.length,
-        itemBuilder: (BuildContext context, int index) {
-          Result result = mainresultlist![index];
-
-          //TODO: Edit and uncomment
-          return GestureDetector(
-              child: Card(
-                shape: DesignConfig.SetRoundedBorder(ColorsRes.white, 5),
-                margin: const EdgeInsets.all(0),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 8, right: 8, top: 8, bottom: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(Constant.setFirstLetterUppercase(result.studentName),
-                          style: Theme.of(context).textTheme.bodySmall!.merge(
-                              TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green))
-                      ),
-                      Row(children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            '${result.chapter}',
-                            style: Theme.of(context).textTheme.titleMedium!.merge(
-                                TextStyle(
-                                    color: ColorsRes.appcolor,
-                                    fontWeight: FontWeight.w700,
-                                ),
-                            )
-                          )
-                        ),
-                        Text(
-                          // Constant.DisplayDateTimeyearText(
-                          //     transaction.created_on!),
-                          'Result Date',
-                          style: Theme.of(context).textTheme.bodySmall!.merge(
-                              TextStyle(
-                                  color: ColorsRes.grey.withOpacity(0.6),
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                      ]),
-                    ],
-                  ),
-                ),
-              ));
-        });
   }
 
   Widget feeListWidget() {
@@ -521,15 +482,15 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        // Constant.setFirstLetterUppercase(
-                        //     transaction.crypto_currency_type),
-                        'Student name',
-                        style: Theme.of(context).textTheme.bodySmall!.merge(
-                            TextStyle(
-                                color: ColorsRes.green,
-                                fontWeight: FontWeight.bold)),
-                      ),
+                      // Text(
+                      //   // Constant.setFirstLetterUppercase(
+                      //   //     transaction.crypto_currency_type),
+                      //   'Student name',
+                      //   style: Theme.of(context).textTheme.bodySmall!.merge(
+                      //       TextStyle(
+                      //           color: ColorsRes.green,
+                      //           fontWeight: FontWeight.bold)),
+                      // ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

@@ -21,7 +21,7 @@ class _AcademicRecProgressWebViewState extends State<AcademicRecProgressWebView>
   void initState() {
     super.initState();
     _controller = WebViewController()
-      ..loadRequest(Uri.parse('https://alasheikquranlearningsystem.citycloudschool.co.ke/~main/academic_recorded_progress.php?user_id=${widget.userId}'));
+      ..loadRequest(Uri.parse('https://alasheikquranlearningsystem.citycloudschool.co.ke/~main/academic_reports.php?user_id=${widget.userId}'));
   }
 
   @override

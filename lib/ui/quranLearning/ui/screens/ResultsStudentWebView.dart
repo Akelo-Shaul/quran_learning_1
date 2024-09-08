@@ -7,8 +7,9 @@ import '../../utils/ColorsRes.dart';
 class ResultsStudentWebView extends StatefulWidget {
   final String userId;
   final Map<String, dynamic> data;
+  final bool showBottomNavigationBar;
 
-  const ResultsStudentWebView({Key? key, required this.userId, required this.data}) : super(key: key);
+  const ResultsStudentWebView({Key? key, required this.userId, required this.data, required this.showBottomNavigationBar}) : super(key: key);
 
   @override
   _ResultsStudentWebViewState createState() => _ResultsStudentWebViewState();
@@ -31,7 +32,7 @@ class _ResultsStudentWebViewState extends State<ResultsStudentWebView> {
         title: const Text('Student Results'),
       ),
       body: WebViewWidget(controller: _controller),
-      bottomNavigationBar: setBottomNavigation(1, context),
+      bottomNavigationBar: widget.showBottomNavigationBar ? setBottomNavigation(1, context) : null,
     );
   }
 

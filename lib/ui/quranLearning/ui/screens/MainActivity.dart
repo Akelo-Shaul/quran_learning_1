@@ -6,10 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:quran_learning_1/ui/quranLearning/model/Amount.dart';
 import 'package:quran_learning_1/ui/quranLearning/model/Result.dart';
-import 'package:quran_learning_1/ui/quranLearning/ui/screens/HistoryActivity.dart';
 import 'package:quran_learning_1/ui/quranLearning/ui/screens/HomePage.dart';
 import 'package:quran_learning_1/ui/quranLearning/ui/screens/LoginActivity.dart';
 import 'package:quran_learning_1/ui/quranLearning/ui/screens/ProfileActivity.dart';
+
+import 'package:quran_learning_1/ui/quranLearning/ui/screens/ResultsStudentWebView.dart';
+import 'package:quran_learning_1/ui/quranLearning/ui/screens/ResultsWebView.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/ColorsRes.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/Constant.dart';
 import 'package:quran_learning_1/ui/quranLearning/utils/DesignConfig.dart';
@@ -162,11 +164,15 @@ class MainActivityState extends State<MainActivity> {
   Widget bodyContainer() {
     final Map<String, dynamic> data = widget.data;
 
+    String userType = data['user_type'] ?? 'Student';
+
     switch (selectedPos) {
       case 0:
         return HomePage(data: data);
       case 1:
-        return HistoryActivity(0);
+        return userType == 'Teacher'
+            ? ResultsWebView(userId: widget.data['userID'], data: widget.data, showBottomNavigationBar: false,)
+            : ResultsStudentWebView(userId: widget.data['userID'], data: widget.data,showBottomNavigationBar: false,);
       case 2:
         return ProfileActivity(data: data);
       default:
@@ -221,7 +227,7 @@ class MainActivityState extends State<MainActivity> {
                   ),
                 ),
                 child: ClipOval(
-                  child: Constant.ImageWidget(UIData.userimage, 81, 81),
+                  child: Constant.ImageWidget(UIData.profileimage, 81, 81),
                 ),
               ),
               const SizedBox(width: 8),

@@ -10,6 +10,8 @@ class UIData {
   static String userimage =
       "assets/images/avatar/avatar-12.svg";
 
+  static String profileimage = "assets/images/avatar/defaultprofile.svg";
+
   // static List<String> sliderimglist = [
   //   "assets/images/fullApps/cryptotech/slider1-min.png",
   //   "assets/images/fullApps/cryptotech/slider2-min.png",
@@ -104,18 +106,14 @@ class UIData {
     },
   ];
 
+  static void addPaymentData(String amountPaid, String dateOfPay) {
+    amountdata.add({
+      "amount": amountPaid,
+      "date": dateOfPay,
+    });
+  }
+
   static List<Map<String, String>> amountdata = [
-    {
-      "amount": "50",
-      "date": "2024-01-01",
-    },
-    {
-      "amount": "100",
-      "date": "2024-02-01",
-    },
-    {
-      "amount": "150",
-      "date": "2024-03-01",
-    },
   ];
+
 }

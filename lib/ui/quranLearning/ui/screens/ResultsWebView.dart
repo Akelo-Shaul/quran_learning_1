@@ -7,8 +7,9 @@ import '../../utils/ColorsRes.dart';
 class ResultsWebView extends StatefulWidget {
   final String userId;
   final Map<String, dynamic> data;
+  final bool showBottomNavigationBar;
 
-  const ResultsWebView({Key? key, required this.userId, required this.data}) : super(key: key);
+  const ResultsWebView({Key? key, required this.userId, required this.data, required this.showBottomNavigationBar}) : super(key: key);
 
   @override
   _ResultsWebViewState createState() => _ResultsWebViewState();
@@ -31,11 +32,12 @@ class _ResultsWebViewState extends State<ResultsWebView> {
         title: const Text('Record Results'),
       ),
       body: WebViewWidget(controller: _controller),
-      bottomNavigationBar: setBottomNavigation(1, context),
+      bottomNavigationBar: widget.showBottomNavigationBar ? setBottomNavigation(1, context) : null,
     );
   }
 
   Widget setBottomNavigation(int? pos, BuildContext bcontext) {
+    print("setBottomNavigation called with pos: $pos");
     return BottomAppBar(
       child: Container(
         padding: const EdgeInsets.only(top: 10),

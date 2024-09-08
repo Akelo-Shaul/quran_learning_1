@@ -94,7 +94,7 @@ class ProfileActivityState extends State<ProfileActivity>
                         radius: 47,
                         child: ClipOval(
                           clipBehavior: Clip.antiAliasWithSaveLayer,
-                          child: Constant.ImageWidget(UIData.userimage, 95, 95),
+                          child: Constant.ImageWidget(UIData.profileimage, 95, 95),
                         ),
                       ),
                     ]),
@@ -199,7 +199,42 @@ class ProfileActivityState extends State<ProfileActivity>
                 ),
                 ListTile(
                   onTap: () {
-                    logout();
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          shape: DesignConfig.roundedrectangleshape,
+                          title: Text(
+                            StringsRes.logout,
+                            style: TextStyle(
+                              color: ColorsRes.secondgradientcolor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          content: Text(StringsRes.logoutconfirm),
+                          actions: [
+                            TextButton(
+                              child: Text(
+                                StringsRes.cancel,
+                                style: TextStyle(color: ColorsRes.secondgradientcolor),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: Text(
+                                StringsRes.logout,
+                                style: TextStyle(color: ColorsRes.secondgradientcolor),
+                              ),
+                              onPressed: () {
+                                logout();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                   leading: SvgPicture.asset(
                     'assets/images/pro_logout.svg',
