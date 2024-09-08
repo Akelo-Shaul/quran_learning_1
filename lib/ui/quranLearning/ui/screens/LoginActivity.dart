@@ -38,7 +38,7 @@ class LoginActivityState extends State<LoginActivity> {
 
   Future<http.Response> loginAPI(String user, String pass) async {
     final response = await http.get(Uri.parse(
-        'https://alasheikquranlearningsystem.citycloudschool.co.ke/allapis/login.php?username=${user}&password=${pass}'));
+        'https://www.alasheikquranlearningsystem.com/allapis/login.php?username=${user}&password=${pass}'));
 
     if (response.statusCode == 200) {
       return response;
@@ -51,7 +51,7 @@ class LoginActivityState extends State<LoginActivity> {
   // Get the user details from details API
   Future<http.Response> userDetails(String userID) async {
     final response = await http.get(Uri.parse(
-        'https://alasheikquranlearningsystem.citycloudschool.co.ke/allapis/profile.php?userID=${userID}'));
+        'https://www.alasheikquranlearningsystem.com/allapis/profile.php?userID=${userID}'));
 
     if(userID != null && userID.isNotEmpty){
       return response;

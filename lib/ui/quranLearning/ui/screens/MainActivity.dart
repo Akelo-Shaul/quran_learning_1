@@ -243,13 +243,6 @@ class MainActivityState extends State<MainActivity> {
                         color: ColorsRes.white,
                       ),
                     ),
-                    Text(
-                      'The email',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: ColorsRes.white.withOpacity(0.9),
-                      ),
-                    ),
                   ],
                 ),
               ),

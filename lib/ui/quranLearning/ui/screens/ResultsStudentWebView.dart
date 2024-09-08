@@ -22,7 +22,7 @@ class _ResultsStudentWebViewState extends State<ResultsStudentWebView> {
   void initState() {
     super.initState();
     _controller = WebViewController()
-      ..loadRequest(Uri.parse('https://alasheikquranlearningsystem.citycloudschool.co.ke/~main/performance.php?user_id=${widget.userId}'));
+      ..loadRequest(Uri.parse('https://www.alasheikquranlearningsystem.com/~main/performance.php?user_id=${widget.userId}'));
   }
 
   @override

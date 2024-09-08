@@ -21,7 +21,7 @@ class _PaymentRecordsWebViewState extends State<PaymentRecordsWebView> {
   void initState() {
     super.initState();
     _controller = WebViewController()
-      ..loadRequest(Uri.parse('https://alasheikquranlearningsystem.citycloudschool.co.ke/~main/payments_records.php?user_id=${widget.userId}'));
+      ..loadRequest(Uri.parse('https://www.alasheikquranlearningsystem.com/~main/payments_records.php?user_id=${widget.userId}'));
   }
 
   @override

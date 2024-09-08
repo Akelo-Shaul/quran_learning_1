@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   static Future<void> fetchBanners() async {
-    final url = 'https://alasheikquranlearningsystem.citycloudschool.co.ke/allapis/banners.php';
+    final url = 'https://www.alasheikquranlearningsystem.com/allapis/banners.php';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -102,7 +102,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final response = await http.get(Uri.parse(
-        'https://alasheikquranlearningsystem.citycloudschool.co.ke/allapis/recent_fee.php?admno=$userID'));
+        'https://www.alasheikquranlearningsystem.com/allapis/recent_fee.php?admno=$userID'));
 
     if (response.statusCode == 200) {
       List<dynamic> feeReports = json.decode(response.body);
@@ -404,7 +404,7 @@ class _HomePageState extends State<HomePage> {
                       )),
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => HistoryActivity(2)));
+                        builder: (context) => PaymentRecordsWebView(userId: widget.data['userID'], data: widget.data,)));
                   },
                 ),
               ]),
